@@ -53,4 +53,4 @@ dkms.conf
 
 build/
 .idea/
-stunnel-*
+stunnel-5.46
