@@ -1,7 +1,7 @@
 
 BUILD_DIR=$(shell pwd)/build
 STAGE_DIR=$(BUILD_DIR)/stage
-TAG_FILE=$(STAGE_DIR)/tag
+TAG_FILE=$(STAGE_DIR)/container-full-tag
 VERSION ?= 5.56
 BUILD_NUMBER ?= 00
 FULL_TAG := platform9/stunnel:$(VERSION)-$(BUILD_NUMBER)
