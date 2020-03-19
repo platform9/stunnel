@@ -772,7 +772,7 @@ NOEXPORT void transfer(CLI *c) {
                 c->ssl_ptr-=(size_t)num;
                 memset(c->ssl_buff+c->ssl_ptr, 0, (size_t)num); /* paranoia */
                 c->sock_bytes+=(size_t)num;
-                s_log(LOG_NOTICE, "wrote %d byte(s) to socket", num);
+                s_log(LOG_NOTICE, "wrote %ld byte(s) to socket", num);
                 watchdog=0; /* reset the watchdog */
             }
         }
@@ -793,7 +793,7 @@ NOEXPORT void transfer(CLI *c) {
                 break; /* do not reset the watchdog */
             default:
                 c->sock_ptr+=(size_t)num;
-                s_log(LOG_NOTICE, "read %d byte(s) from socket", num);
+                s_log(LOG_NOTICE, "read %ld byte(s) from socket", num);
                 watchdog=0; /* reset the watchdog */
             }
         }
@@ -822,7 +822,7 @@ NOEXPORT void transfer(CLI *c) {
                 c->sock_ptr-=(size_t)num;
                 memset(c->sock_buff+c->sock_ptr, 0, (size_t)num); /* paranoia */
                 c->ssl_bytes+=(size_t)num;
-                s_log(LOG_NOTICE, "wrote %d byte(s) to TLS", num);
+                s_log(LOG_NOTICE, "wrote %ld byte(s) to TLS", num);
                 watchdog=0; /* reset the watchdog */
                 break;
             case SSL_ERROR_WANT_WRITE: /* buffered data? */
@@ -880,7 +880,7 @@ NOEXPORT void transfer(CLI *c) {
                     break; /* do not reset the watchdog */
                 }
                 c->ssl_ptr+=(size_t)num;
-                s_log(LOG_NOTICE, "read %d byte(s) from TLS", num);
+                s_log(LOG_NOTICE, "read %ld byte(s) from TLS", num);
                 watchdog=0; /* reset the watchdog */
                 break;
             case SSL_ERROR_WANT_WRITE:
