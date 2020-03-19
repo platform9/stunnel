@@ -1,5 +1,5 @@
 diff -aur stunnel-5.43/src/client.c stunnel-5.43-platform9/src/client.c
---- stunnel-5.46/src/client.c	2017-11-03 02:10:03.000000000 -0700
+--- stunnel-5.56/src/client.c	2017-11-03 02:10:03.000000000 -0700
 +++ stunnel-5.43-platform9/src/client.c	2018-06-05 16:01:04.992978854 -0700
 @@ -772,6 +772,7 @@
                  c->ssl_ptr-=(size_t)num;
