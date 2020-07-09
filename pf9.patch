@@ -1,7 +1,6 @@
-diff -aur stunnel-5.43/src/client.c stunnel-5.43-platform9/src/client.c
---- stunnel-5.56/src/client.c	2017-11-03 02:10:03.000000000 -0700
-+++ stunnel-5.43-platform9/src/client.c	2018-06-05 16:01:04.992978854 -0700
-@@ -772,6 +772,7 @@
+--- stunnel-5.56/src/client.c	2019-11-11 12:05:09.000000000 -0800
++++ stunnel-5.56-platform9/src/client.c	2020-07-09 16:47:05.408071340 -0700
+@@ -902,6 +902,7 @@
                  c->ssl_ptr-=(size_t)num;
                  memset(c->ssl_buff+c->ssl_ptr, 0, (size_t)num); /* paranoia */
                  c->sock_bytes+=(size_t)num;
@@ -9,7 +8,7 @@ diff -aur stunnel-5.43/src/client.c stunnel-5.43-platform9/src/client.c
                  watchdog=0; /* reset the watchdog */
              }
          }
-@@ -792,6 +793,7 @@
+@@ -922,6 +923,7 @@
                  break; /* do not reset the watchdog */
              default:
                  c->sock_ptr+=(size_t)num;
@@ -17,7 +16,7 @@ diff -aur stunnel-5.43/src/client.c stunnel-5.43-platform9/src/client.c
                  watchdog=0; /* reset the watchdog */
              }
          }
-@@ -820,6 +822,7 @@
+@@ -950,6 +952,7 @@
                  c->sock_ptr-=(size_t)num;
                  memset(c->sock_buff+c->sock_ptr, 0, (size_t)num); /* paranoia */
                  c->ssl_bytes+=(size_t)num;
@@ -25,7 +24,7 @@ diff -aur stunnel-5.43/src/client.c stunnel-5.43-platform9/src/client.c
                  watchdog=0; /* reset the watchdog */
                  break;
              case SSL_ERROR_WANT_WRITE: /* buffered data? */
-@@ -877,6 +880,7 @@
+@@ -1007,6 +1010,7 @@
                      break; /* do not reset the watchdog */
                  }
                  c->ssl_ptr+=(size_t)num;
@@ -33,3 +32,20 @@ diff -aur stunnel-5.43/src/client.c stunnel-5.43-platform9/src/client.c
                  watchdog=0; /* reset the watchdog */
                  break;
              case SSL_ERROR_WANT_WRITE:
+@@ -1594,10 +1598,12 @@
+         return;
+     }
+ 
+-    /* check if the address was already set in protocol negotiations */
+-    /* used by the following protocols: CONNECT, SOCKS */
+-    if(c->connect_addr.num)
+-        return;
++    /* Platform9 CORE-956: don't reuse cached addresses */
++    if(c->connect_addr.num) {
++        s_log(LOG_NOTICE, "Clearing cached address(es)");
++        str_free(c->connect_addr.addr);
++        addrlist_reset(&c->connect_addr);
++    }
+ 
+     /* transparent destination */
+     if(c->opt->option.transparent_dst) {
