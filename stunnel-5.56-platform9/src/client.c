@@ -1602,7 +1602,7 @@ NOEXPORT void connect_setup(CLI *c) {
     if(c->connect_addr.num) {
         s_log(LOG_NOTICE, "Clearing cached address(es)");
         str_free(c->connect_addr.addr);
-        addrlist_reset(&c->connect_addr);
+        addrlist_clear(&c->connect_addr, 0);
     }
 
     /* transparent destination */
