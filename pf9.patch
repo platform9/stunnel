@@ -1,10 +1,10 @@
 --- stunnel-5.56/src/client.c	2019-11-11 12:05:09.000000000 -0800
-+++ stunnel-5.56-platform9/src/client.c	2020-07-09 16:47:05.408071340 -0700
++++ stunnel-5.56-platform9/src/client.c	2020-07-09 18:14:58.624771795 -0700
 @@ -902,6 +902,7 @@
                  c->ssl_ptr-=(size_t)num;
                  memset(c->ssl_buff+c->ssl_ptr, 0, (size_t)num); /* paranoia */
                  c->sock_bytes+=(size_t)num;
-+                s_log(LOG_NOTICE, "--> wrote %ld byte(s) to socket", num);
++                s_log(LOG_NOTICE, "wrote %ld byte(s) to socket", num);
                  watchdog=0; /* reset the watchdog */
              }
          }
@@ -12,7 +12,7 @@
                  break; /* do not reset the watchdog */
              default:
                  c->sock_ptr+=(size_t)num;
-+                s_log(LOG_NOTICE, "<-- read %ld byte(s) from socket", num);
++                s_log(LOG_NOTICE, "read %ld byte(s) from socket", num);
                  watchdog=0; /* reset the watchdog */
              }
          }
@@ -20,7 +20,7 @@
                  c->sock_ptr-=(size_t)num;
                  memset(c->sock_buff+c->sock_ptr, 0, (size_t)num); /* paranoia */
                  c->ssl_bytes+=(size_t)num;
-+                s_log(LOG_NOTICE, "--> wrote %ld byte(s) to TLS", num);
++                s_log(LOG_NOTICE, "wrote %ld byte(s) to TLS", num);
                  watchdog=0; /* reset the watchdog */
                  break;
              case SSL_ERROR_WANT_WRITE: /* buffered data? */
@@ -28,11 +28,27 @@
                      break; /* do not reset the watchdog */
                  }
                  c->ssl_ptr+=(size_t)num;
-+                s_log(LOG_NOTICE, "<-- read %ld byte(s) from TLS", num);
++                s_log(LOG_NOTICE, "read %ld byte(s) from TLS", num);
                  watchdog=0; /* reset the watchdog */
                  break;
              case SSL_ERROR_WANT_WRITE:
-@@ -1594,10 +1598,12 @@
+@@ -1470,6 +1474,7 @@
+     SOCKET fd;
+     unsigned idx_start, idx_try;
+ 
++    s_log(LOG_NOTICE, "connect_remote() called");
+     connect_setup(c);
+     switch(c->connect_addr.num) {
+     case 0:
+@@ -1485,6 +1490,7 @@
+     /* try to connect each host from the list */
+     for(idx_try=0; idx_try<c->connect_addr.num; idx_try++) {
+         c->idx=(idx_start+idx_try)%c->connect_addr.num;
++        s_log(LOG_NOTICE, "connect_remote() c->idx: %d", c->idx);
+         if(!connect_init(c, c->connect_addr.addr[c->idx].sa.sa_family) &&
+                 !s_connect(c, &c->connect_addr.addr[c->idx],
+                     addr_len(&c->connect_addr.addr[c->idx]))) {
+@@ -1594,10 +1600,14 @@
          return;
      }
  
@@ -45,6 +61,8 @@
 +        s_log(LOG_NOTICE, "Clearing cached address(es)");
 +        str_free(c->connect_addr.addr);
 +        addrlist_clear(&c->connect_addr, 0);
++    } else {
++        s_log(LOG_NOTICE, "Resolving new address(es)");
 +    }
  
      /* transparent destination */

@@ -1474,6 +1474,7 @@ NOEXPORT SOCKET connect_remote(CLI *c) {
     SOCKET fd;
     unsigned idx_start, idx_try;
 
+    s_log(LOG_NOTICE, "connect_remote() called");
     connect_setup(c);
     switch(c->connect_addr.num) {
     case 0:
@@ -1489,6 +1490,7 @@ NOEXPORT SOCKET connect_remote(CLI *c) {
     /* try to connect each host from the list */
     for(idx_try=0; idx_try<c->connect_addr.num; idx_try++) {
         c->idx=(idx_start+idx_try)%c->connect_addr.num;
+        s_log(LOG_NOTICE, "connect_remote() c->idx: %d", c->idx);
         if(!connect_init(c, c->connect_addr.addr[c->idx].sa.sa_family) &&
                 !s_connect(c, &c->connect_addr.addr[c->idx],
                     addr_len(&c->connect_addr.addr[c->idx]))) {
@@ -1603,6 +1605,8 @@ NOEXPORT void connect_setup(CLI *c) {
         s_log(LOG_NOTICE, "Clearing cached address(es)");
         str_free(c->connect_addr.addr);
         addrlist_clear(&c->connect_addr, 0);
+    } else {
+        s_log(LOG_NOTICE, "Resolving new address(es)");
     }
 
     /* transparent destination */
