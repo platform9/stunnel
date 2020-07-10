@@ -67,3 +67,39 @@
  
      /* transparent destination */
      if(c->opt->option.transparent_dst) {
+--- stunnel-5.56/src/resolver.c	2019-05-15 12:35:16.000000000 -0700
++++ stunnel-5.56-platform9/src/resolver.c	2020-07-09 18:53:12.792973061 -0700
+@@ -247,6 +247,7 @@
+     for(;;) {
+         res=NULL;
+         err=getaddrinfo(host_name, port_name, &hints, &res);
++        s_log(LOG_NOTICE, "getaddrinfo returned %d", err);
+         if(!err) /* success */
+             break;
+         if(err==EAI_SERVICE) {
+@@ -285,9 +286,12 @@
+     /* append the newly resolved addresses to addr_list->addr */
+     addr_list->addr=str_realloc_detached(addr_list->addr,
+         (addr_list->num+num)*sizeof(SOCKADDR_UNION));
+-    for(cur=res; cur; cur=cur->ai_next)
++    for(cur=res; cur; cur=cur->ai_next) {
++        char *dst = s_ntop((SOCKADDR_UNION*)cur->ai_addr, (size_t)cur->ai_addrlen);
++        s_log(LOG_INFO, "hostport2addrlist: new resolved address: %s", dst);
+         memcpy(&addr_list->addr[(addr_list->num)++], cur->ai_addr,
+             (size_t)cur->ai_addrlen);
++    }
+ 
+     freeaddrinfo(res);
+     return num; /* ok - return the number of new addresses */
+@@ -311,9 +315,11 @@
+ unsigned addrlist_dup(SOCKADDR_LIST *dst, const SOCKADDR_LIST *src) {
+     memcpy(dst, src, sizeof(SOCKADDR_LIST));
+     if(src->num) { /* already resolved */
++        s_log(LOG_NOTICE, "addlist_dup: already resolved");
+         dst->addr=str_alloc_detached(src->num*sizeof(SOCKADDR_UNION));
+         memcpy(dst->addr, src->addr, src->num*sizeof(SOCKADDR_UNION));
+     } else { /* delayed resolver */
++        s_log(LOG_NOTICE, "addlist_dup: resolving");
+         addrlist_resolve(dst);
+     }
+     return dst->num;
